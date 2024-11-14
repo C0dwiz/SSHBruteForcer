@@ -9,12 +9,12 @@ init(autoreset=True)
 
 class SSHBruteForcer:
     def __init__(
-        self, target_ip: str, username: str, password_file: str, max_threads: int = 10
+        self, target_ip: str, username: str, password_file: str, max_workers: int = 10
     ):
         self.target_ip = target_ip
         self.username = username
         self.password_file = password_file
-        self.max_threads = max_threads
+        self.max_workers = max_workers
 
     def try_password(self, password: str) -> Tuple[Optional[bool], str]:
         ssh = paramiko.SSHClient()
@@ -35,7 +35,7 @@ class SSHBruteForcer:
     def run(self) -> None:
         passwords = self.load_passwords()
 
-        with ThreadPoolExecutor(max_threads=self.max_threads) as executor:
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             future_to_password = {
                 executor.submit(self.try_password, password): password
                 for password in passwords
